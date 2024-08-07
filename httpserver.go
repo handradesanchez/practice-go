@@ -1,0 +1,16 @@
+package main
+
+import (
+	"net/http"
+	"github.com/labstack/echo/v4"
+)
+
+func HttpServer () {
+	e := echo.New()
+	e.GET("/helloworld", helloWorld)
+	e.Logger.Fatal(e.Start(":8080"))
+}
+
+func helloWorld(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
+}
