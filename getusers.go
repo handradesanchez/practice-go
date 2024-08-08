@@ -1,8 +1,8 @@
 package main
 
 type User struct {
-	Name string
-	Age int
+	Name string `query:"username"`
+	Age int     `query:"age"`
 }
 
 func GetUsers () []User {

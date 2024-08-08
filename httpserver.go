@@ -44,9 +44,14 @@ func usersdb(c echo.Context) error {
 
 func deleteUser(c echo.Context) error {
 	r := RedisDB{}
-	usr,err := r.DeleteUsers("Johny")
+	user := User{}
+	err := c.Bind(&user)
+	if err != nil {
+		return err
+	}
+	usr,err := r.DeleteUsers(user.Name)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Error deleting user")
 	}
-	return c.String(http.StatusOK, fmt.Sprintf("Name: %s\t Age: %d", usr.Name, usr.Age))
+	return c.String(http.StatusOK, fmt.Sprintf("Name: %s\t\t Age: %d", usr.Name, usr.Age))
 }
