@@ -13,6 +13,7 @@ func HttpServer () {
 	e.GET("/helloworld", helloWorld)
 	e.GET("/users", users)
 	e.GET("/usersdb", usersdb)
+	e.DELETE("/usersdb", deleteUser)
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
@@ -21,12 +22,12 @@ func helloWorld(c echo.Context) error {
 }
 
 func users(c echo.Context) error {
-	userNames := getAllUsers(GetUsers())
+	userNames := formatUsers(GetUsers())
 
 	return c.String(http.StatusOK, strings.Join(userNames, "\n"))
 }
 
-func getAllUsers(users []User) []string {
+func formatUsers(users []User) []string {
 	names := make([]string, len(users))
 	for i, user := range users {
 		names[i] = fmt.Sprintf("Name: %s\t Age: %d", user.Name, user.Age)
@@ -36,7 +37,16 @@ func getAllUsers(users []User) []string {
 
 func usersdb(c echo.Context) error {
 	r := RedisDB{}
-	users := getAllUsers(r.GetUsers())
+	users := formatUsers(r.GetUsers())
 
 	return c.String(http.StatusOK, strings.Join(users, "\n"))
+}
+
+func deleteUser(c echo.Context) error {
+	r := RedisDB{}
+	usr,err := r.DeleteUsers("Johny")
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Error deleting user")
+	}
+	return c.String(http.StatusOK, fmt.Sprintf("Name: %s\t Age: %d", usr.Name, usr.Age))
 }

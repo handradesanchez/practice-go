@@ -12,3 +12,7 @@ func (redis *RedisDB) GetUsers() ([]User) {
 	return users
 
 }
+
+func (redis *RedisDB) DeleteUsers(name string) (User,error) {
+	return User{Name: "", Age: 0}, nil
+}
