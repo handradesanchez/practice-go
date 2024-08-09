@@ -1,17 +1,17 @@
 package main
 
-type User struct {
+type user struct {
 	Name string `query:"username"`
 	Age int     `query:"age"`
 }
 
-func GetUsers () []User {
-	return getUsers()
+func getUsers () []user {
+	return getusers()
 }
 
-func getUsers() []User {
+func getusers() []user {
 
-	users := []User{
+	users := []user{
 		{Name: "Juan",  Age: 20},
 		{Name: "Pedro", Age: 30},
 	}

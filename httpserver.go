@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func HttpServer () {
+func httpServer () {
 	e := echo.New()
 	e.GET("/helloworld", helloWorld)
 	e.GET("/users", users)
@@ -22,12 +22,12 @@ func helloWorld(c echo.Context) error {
 }
 
 func users(c echo.Context) error {
-	userNames := formatUsers(GetUsers())
+	userNames := formatUsers(getUsers())
 
 	return c.String(http.StatusOK, strings.Join(userNames, "\n"))
 }
 
-func formatUsers(users []User) []string {
+func formatUsers(users []user) []string {
 	names := make([]string, len(users))
 	for i, user := range users {
 		names[i] = fmt.Sprintf("Name: %s\t Age: %d", user.Name, user.Age)
@@ -36,20 +36,20 @@ func formatUsers(users []User) []string {
 }
 
 func usersdb(c echo.Context) error {
-	r := RedisDB{}
-	users := formatUsers(r.GetUsers())
+	r := redisDB{}
+	users := formatUsers(r.getUsers())
 
 	return c.String(http.StatusOK, strings.Join(users, "\n"))
 }
 
 func deleteUser(c echo.Context) error {
-	r := RedisDB{}
-	user := User{}
+	r := redisDB{}
+	user := user{}
 	err := c.Bind(&user)
 	if err != nil {
 		return err
 	}
-	usr,err := r.DeleteUsers(user.Name)
+	usr,err := r.deleteUsers(user.Name)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Error deleting user")
 	}

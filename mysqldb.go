@@ -1,3 +1,3 @@
 package main
 
-type MySQLDB struct {}
+type mySQLDB struct {}

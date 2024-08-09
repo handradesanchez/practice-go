@@ -1,10 +1,12 @@
 package main
 
-type RedisDB struct {}
+import "errors"
 
-func (redis *RedisDB) GetUsers() ([]User) {
+type redisDB struct {}
 
-	users := []User{
+func (redis *redisDB) getUsers() ([]user) {
+
+	users := []user{
 		{Name: "Johny",  Age: 22},
 		{Name: "Peter", Age: 33},
 	}
@@ -13,6 +15,9 @@ func (redis *RedisDB) GetUsers() ([]User) {
 
 }
 
-func (redis *RedisDB) DeleteUsers(name string) (User,error) {
-	return User{Name: "", Age: 0}, nil
+func (redis *redisDB) deleteUsers(name string) (user,error) {
+	if(name == "") {
+		return user{Name: name, Age: 0}, errors.New("error deleting user")
+	}
+	return user{Name: "", Age: 0}, nil
 }
