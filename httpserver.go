@@ -8,12 +8,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func httpServer () {
+func httpServer() {
 	e := echo.New()
 	e.GET("/helloworld", helloWorld)
 	e.GET("/users", users)
 	e.GET("/usersdb", usersdb)
 	e.DELETE("/usersdb", deleteUser)
+	e.GET("/users1", GetAllUsers)
+	e.DELETE("/users1", deleteUsers)
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
@@ -49,9 +51,58 @@ func deleteUser(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	usr,err := r.deleteUsers(user.Name)
+	usr, err := r.deleteUser(user.Name)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Error deleting user")
 	}
 	return c.String(http.StatusOK, fmt.Sprintf("Name: %s\t\t Age: %d", usr.Name, usr.Age))
+}
+
+func GetAllUsers(c echo.Context) error {
+	var redis redisDB
+	var mySQL mySQLDB
+	var mongo mongoDB
+	dbs := []db{mongo, mySQL, redis}
+	users := getAllUsers(dbs)
+	return c.JSON(http.StatusOK, users)
+}
+
+type db interface {
+	getUsers() []user
+	deleteUser(name string) (user, error)
+}
+
+func getAllUsers(dbs []db) []user {
+	var us []user
+
+	for _, db := range dbs {
+		users := db.getUsers()
+		us = append(users, users...)
+	}
+
+	return us
+}
+
+func deleteUsers(c echo.Context) error{
+	var redis redisDB
+	var mySQL mySQLDB
+	var mongo mongoDB
+	dbs := []db{mongo, mySQL, redis}
+	var users []user
+
+	var user user
+	err := c.Bind(&user)
+	if err != nil {
+		return err
+	}
+
+	for _, db := range dbs {
+		user, err := db.deleteUser(user.Name)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Error deleting user")
+		}	
+		users = append(users, user)
+	}
+
+	return c.JSON(http.StatusOK, users)
 }
